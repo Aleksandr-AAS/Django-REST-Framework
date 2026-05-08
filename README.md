@@ -7,7 +7,7 @@
 
 1. Клонируйте репозиторий:
 ```
-https://github.com/Aleksandr-AAS/Fourth-kursovoy-SAA
+https://github.com/Aleksandr-AAS/Django-REST-Framework
 ```
 
 2. Установите зависимости:
@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 #### 5. Дополнительная информация по текущему релизу на 
 ##### 
-##### Проект 4. Сервис управления рассылками
+##### 30.1 Вьюсеты и дженерики
 
 
 
