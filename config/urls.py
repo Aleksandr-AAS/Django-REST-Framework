@@ -8,6 +8,8 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/api/courses/", permanent=False)),
     path("admin/", admin.site.urls),
     path("api/", include("lms.urls")),
+    path("api/", include("courses.urls")),
+    path("api/", include("users.urls")),
 ]
 
 if settings.DEBUG:

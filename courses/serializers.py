@@ -5,17 +5,20 @@ from .models import Course, Lesson
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = "__all__"
+        fields = ["id", "title", "description", "created_at"]
 
 
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.IntegerField(source="lessons.count", read_only=True)
-    lessons = LessonSerializer(source="lessons.all", many=True, read_only=True)
-    created_at_formatted = serializers.DateTimeField(
-        format="%d.%m.%Y %H:%M", source="created_at", read_only=True
-    )
-    is_popular = serializers.BooleanField(read_only=True)
+    lessons = LessonSerializer(many=True, read_only=True, source="lessons.all")
 
     class Meta:
         model = Course
-        fields = "__all__"
+        fields = [
+            "id",
+            "title",
+            "description",
+            "created_at",
+            "lessons_count",
+            "lessons",
+        ]
