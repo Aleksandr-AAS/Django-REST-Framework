@@ -48,6 +48,40 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "урок"
         verbose_name_plural = "уроки"
+        ordering = ["id"]
 
     def __str__(self):
         return f"{self.title} (курс: {self.course.title})"
+
+
+# from django.db import models
+# from django.conf import settings
+
+
+class Subscription(models.Model):
+    """Модель подписки пользователя на обновления курса"""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="пользователь",
+    )
+    course = models.ForeignKey(
+        "Course",
+        on_delete=models.CASCADE,
+        related_name="subscribers",
+        verbose_name="курс",
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата подписки")
+
+    class Meta:
+        verbose_name = "подписка"
+        verbose_name_plural = "подписки"
+        unique_together = (
+            "user",
+            "course",
+        )  # Один пользователь - одна подписка на курс
+
+    def __str__(self):
+        return f"{self.user.email} -> {self.course.title}"
