@@ -37,28 +37,33 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 class IsModeratorOrOwner(permissions.BasePermission):
     """
-    Комбинированное разрешение:
-    - Модератор может всё (кроме создания и удаления)
+    - Админ может всё
+    - Модератор может просматривать и редактировать (НЕ удалять)
     - Владелец может всё со своими объектами
+    - Другие пользователи получают 403
     """
 
     def has_permission(self, request, view):
-        # Для списков: проверяем, авторизован ли пользователь
         return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
         user = request.user
 
-        # Модератор может просматривать и редактировать любые объекты
-        if user.groups.filter(name="moderators").exists():
-            # Модератор не может удалять (это проверяем отдельно)
-            if request.method == "DELETE":
-                return False
+        # Админ может всё
+        if user.is_staff:
             return True
+
+        # Проверяем, модератор ли пользователь
+        is_moderator = user.groups.filter(name="moderators").exists()
+
+        # Модератор: просмотр и редактирование, НО НЕ удаление
+        if is_moderator:
+            return request.method in permissions.SAFE_METHODS + ("PUT", "PATCH")
 
         # Обычный пользователь — только свои объекты
         if hasattr(obj, "owner"):
             return obj.owner == user
+
         return False
 
 
