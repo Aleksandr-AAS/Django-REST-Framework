@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
+import stripe
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     "lms",
     "courses",
     "django_filters",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -118,3 +120,40 @@ SIMPLE_JWT = {
     "TOKEN_TYPE_CLAIM": "token_type",
     "TOKEN_OBTAIN_SERIALIZER": "users.serializers_jwt.CustomTokenObtainPairSerializer",
 }
+# DRF настройки
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# Настройки документации
+SPECTACULAR_SETTINGS = {
+    "TITLE": "LMS API Documentation",
+    "DESCRIPTION": "API для управления образовательной платформой",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": True,
+    },
+    "TAGS": [
+        {"name": "auth", "description": "Авторизация и регистрация"},
+        {"name": "users", "description": "Управление пользователями"},
+        {"name": "courses", "description": "Управление курсами"},
+        {"name": "lessons", "description": "Управление уроками"},
+        {"name": "subscriptions", "description": "Подписки на курсы"},
+        {"name": "payments", "description": "Платежи и оплата курсов"},  # ← добавить
+    ],
+}
+
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
+stripe.api_key = STRIPE_SECRET_KEY
