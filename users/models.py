@@ -61,7 +61,8 @@ class Payment(models.Model):
     )
     payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
     course = models.ForeignKey(
-        "courses.Course",  # ← используем строковую ссылку, чтобы избежать циклического импорта
+        "lms.Course",
+        # "courses.Course",  # ← используем строковую ссылку, чтобы избежать циклического импорта
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -94,3 +95,14 @@ class Payment(models.Model):
     def __str__(self):
         target = self.course if self.course else self.lesson
         return f"Платеж {self.user} - {target} - {self.amount} руб."
+
+    stripe_session_id = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name="ID сессии Stripe"
+    )
+    stripe_payment_intent_id = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name="ID PaymentIntent Stripe"
+    )
+    payment_link = models.URLField(
+        max_length=500, blank=True, null=True, verbose_name="ссылка на оплату"
+    )
+    is_successful = models.BooleanField(default=False, verbose_name="успешно оплачено")

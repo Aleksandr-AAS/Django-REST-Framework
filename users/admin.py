@@ -51,6 +51,4 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ("payment_method", "payment_date")
     search_fields = ("user__email", "user__phone", "course__title", "lesson__title")
 
-    autocomplete_fields = ["user", "course", "lesson"]
-
     date_hierarchy = "payment_date"
