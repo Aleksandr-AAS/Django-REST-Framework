@@ -40,6 +40,28 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Course.objects.all()
         return Course.objects.filter(owner=user)
 
+    def perform_update(self, serializer):
+        """
+        При обновлении курса запускаем Celery-задачу для рассылки уведомлений.
+        """
+        course = self.get_object()
+        old_data = {
+            "title": course.title,
+            "description": course.description,
+        }
+
+        serializer.save()
+
+        # Определяем, какие поля изменились
+        updated_fields = []
+        for field, old_value in old_data.items():
+            if getattr(course, field) != old_value:
+                updated_fields.append(field)
+
+        # Если есть изменения — отправляем задачу
+        if updated_fields:
+            send_course_update_notification.delay(course.id, updated_fields)
+
 
 class LessonListCreateView(generics.ListCreateAPIView):
     """
