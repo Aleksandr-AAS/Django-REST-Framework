@@ -3,7 +3,6 @@ from decouple import config
 from datetime import timedelta
 import stripe
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
@@ -24,6 +23,7 @@ INSTALLED_APPS = [
     "courses",
     "django_filters",
     "drf_spectacular",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -157,3 +157,20 @@ SPECTACULAR_SETTINGS = {
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
 stripe.api_key = STRIPE_SECRET_KEY
+
+# Celery
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PORT = config("REDIS_PORT", default="6379")
+REDIS_DB = config("REDIS_DB", default="0")
+
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_ENABLE_UTC = False
+CELERY_TASK_TRACK_STARTED = True
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
