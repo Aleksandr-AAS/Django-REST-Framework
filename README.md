@@ -1,4 +1,4 @@
-# Django
+# Django REST Framework + Celery + Docker
 # Описание:
 
 
@@ -10,9 +10,10 @@
 https://github.com/Aleksandr-AAS/Django-REST-Framework
 ```
 
-2. Установите зависимости:
+2. Запуск проекта:
 ```
-pip install -r requirements.txt
+Скопируйте `.env.template` в `.env` и заполните переменные
+Выполните docker-compose up --build
 ```
 
 3. Создайте базу данных и выполните миграции:
